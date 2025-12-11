@@ -4,6 +4,5 @@ project(HotUpdateDemo CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_subdirectory(vm_runtime)
-add_subdirectory(gamecode)
-add_subdirectory(interpreter)
+add_subdirectory(VM)
+add_subdirectory(Interpreter)
