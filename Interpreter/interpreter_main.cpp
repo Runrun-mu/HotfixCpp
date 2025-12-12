@@ -204,9 +204,11 @@ int main(int argc, char** argv) {
     std::string mode = argv[1];
 
     try {
-        fs::path root = fs::current_path();       // build 目录
-        fs::path user_src_dir = root / "../user_src";
-        fs::path game_gen_dir = root / "../gamecode/generated";
+        // 当前工作目录通常为 build/Interpreter/<config>，向上三级即为工程根目录
+        fs::path build_dir = fs::current_path();
+        fs::path project_root = fs::weakly_canonical(build_dir / ".." / ".." / "..");
+        fs::path user_src_dir = project_root / "Test";
+        fs::path game_gen_dir = project_root / "GeneratedCode";
 
         fs::create_directories(game_gen_dir);
 
@@ -219,14 +221,14 @@ int main(int argc, char** argv) {
             int value = parse_const_from_test(test_src);
             std::string body = extract_test_body(test_src);
 
-            generate_baseline_bc(root / "baseline_bc.bin", value);
+            generate_baseline_bc(project_root / "baseline_bc.bin", value);
             generate_test_native(game_gen_dir / "Test_native.cpp", body, kWrapperIdForTest);
             generate_main_hotfix(game_gen_dir / "main_hotfix.cpp", kWrapperIdForTest);
 
         } else if (mode == "--mode=patch") {
             std::string test_src = read_file(test_src_path);
             int new_value = parse_const_from_test(test_src);
-            generate_patch_diff(root / "patch_diff.bin", new_value);
+            generate_patch_diff(project_root / "patch_diff.bin", new_value);
 
         } else {
             std::cout << "Unknown mode: " << mode << "\n";
